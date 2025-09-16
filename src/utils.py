@@ -36,17 +36,30 @@ def make_run_dir(results_dir: str) -> Path:
 
 # ---------- data ----------
 def load_dataframe(csv_path: str) -> pd.DataFrame:
-    df = pd.read_csv(csv_path, sep=";") if csv_path.endswith(".csv") else pd.read_csv(csv_path)
-    # UCI/Kaggleの赤ワインCSVはセミコロン区切り
+    # 区切り文字を自動推定（; / , どちらでもOK）+ python engine
+    df = pd.read_csv(csv_path, sep=None, engine="python")
+    # 列名を正規化（前後空白除去・小文字化・空白→アンダースコア）
+    df = df.rename(columns={c: c.strip() for c in df.columns})
+    df.columns = [c.strip().lower().replace(" ", "_") for c in df.columns]
     return df
+
+def _resolve_target_col(df: pd.DataFrame, target_name: str) -> str:
+    # 大文字小文字・空白の違いを吸収して target 列を特定
+    tn = target_name.strip().lower().replace(" ", "_")
+    for c in df.columns:
+        if c.strip().lower().replace(" ", "_") == tn:
+            return c
+    raise KeyError(f"target column '{target_name}' not found. columns={list(df.columns)}")
 
 def split_and_scale(
     df: pd.DataFrame, cfg: Config
 ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray, StandardScaler]:
-    X = df.drop(columns=[cfg.target_col]).values.astype(np.float32)
-    y = df[cfg.target_col].values.astype(np.float32)
+    target_col = _resolve_target_col(df, cfg.target_col)
 
-    # testを先に確保 → 残りからval
+    X = df.drop(columns=[target_col]).values.astype(np.float32)
+    y = df[target_col].values.astype(np.float32)
+
+    # test → val の順に分割
     X_train, X_test, y_train, y_test = train_test_split(
         X, y, test_size=cfg.test_size, random_state=cfg.random_state
     )

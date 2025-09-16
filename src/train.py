@@ -97,7 +97,7 @@ def main():
 
     for epoch in range(1, cfg.epochs + 1):
         train_rmse = train_one_epoch(model, train_loader, criterion, optimizer, device)
-        yv, pv = utils.evaluate(model, val_loader, device)  # y_true, y_pred
+        yv, pv = evaluate(model, val_loader, device)  # y_true, y_pred
         val_metrics = utils.compute_regression_metrics(yv, pv)
         val_rmse = val_metrics["RMSE"]
 
