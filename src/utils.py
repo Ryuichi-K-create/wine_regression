@@ -16,7 +16,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from torch.utils.data import DataLoader, TensorDataset
 
-from .config import Config
+from src.config import Config
 
 # ---------- misc ----------
 def set_seed(seed: int) -> None:
@@ -36,8 +36,7 @@ def make_run_dir(results_dir: str) -> Path:
 
 # ---------- data ----------
 def load_dataframe(csv_path: str) -> pd.DataFrame:
-    df = pd.read_csv(csv_path, sep=";") if csv_path.endswith(".csv") else pd.read_csv(csv_path)
-    # UCI/Kaggleの赤ワインCSVはセミコロン区切り
+    df = pd.read_csv(csv_path)  # デフォルトでカンマ区切り
     return df
 
 def split_and_scale(

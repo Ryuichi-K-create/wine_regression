@@ -1,5 +1,8 @@
 # src/train.py
 from __future__ import annotations
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import argparse
 import numpy as np
 import torch
@@ -8,9 +11,9 @@ from torch.optim import Adam
 from pathlib import Path
 import pandas as pd
 
-from .config import Config
-from .models.mlp import MLPRegressor
-from . import utils
+from src.config import Config
+from src.models.mlp import MLPRegressor
+from src import utils
 
 
 def train_one_epoch(model, loader, criterion, optimizer, device):
@@ -97,7 +100,7 @@ def main():
 
     for epoch in range(1, cfg.epochs + 1):
         train_rmse = train_one_epoch(model, train_loader, criterion, optimizer, device)
-        yv, pv = utils.evaluate(model, val_loader, device)  # y_true, y_pred
+        yv, pv = evaluate(model, val_loader, device)  # y_true, y_pred
         val_metrics = utils.compute_regression_metrics(yv, pv)
         val_rmse = val_metrics["RMSE"]
 
@@ -124,7 +127,7 @@ def main():
     utils.plot_learning_curve(hist_df, figs_dir / "learning_curve.png")
 
     # ベストモデルで再評価
-    model.load_state_dict(torch.load(run_dir / "best_model.pt", map_location=device))
+    model.load_state_dict(torch.load(run_dir / "best_model.pt", map_location=device, weights_only=True))
 
     # train/val/test の指標と予測ファイル
     metrics_all = {}
