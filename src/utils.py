@@ -16,7 +16,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from torch.utils.data import DataLoader, TensorDataset
 
-from .config import Config
+from src.config import Config
 
 # ---------- misc ----------
 def set_seed(seed: int) -> None:
