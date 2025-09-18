@@ -13,6 +13,7 @@ import pandas as pd
 
 from src.config import Config
 from src.models.mlp import MLPRegressor
+from src.models.svr import SVRRegressor
 from src import utils
 
 
@@ -50,17 +51,19 @@ def evaluate(model, loader, device):
 
 def main():
     parser = argparse.ArgumentParser()
+    parser.add_argument("--model", type=str, default=None, choices=["mlp", "svr"], help="モデルタイプ")
     parser.add_argument("--epochs", type=int, default=None)
     parser.add_argument("--lr", type=float, default=None)
     parser.add_argument("--hidden", type=str, default=None, help="例: 128,64")
     args = parser.parse_args()
 
     cfg = Config()
-    if args.epochs is not None: cfg = Config(epochs=args.epochs)
-    if args.lr is not None:     cfg = Config(epochs=cfg.epochs, lr=args.lr)
+    if args.model is not None: cfg = Config(model_type=args.model)
+    if args.epochs is not None: cfg = Config(model_type=cfg.model_type, epochs=args.epochs)
+    if args.lr is not None:     cfg = Config(model_type=cfg.model_type, epochs=cfg.epochs, lr=args.lr)
     if args.hidden:
         hidden = tuple(int(x.strip()) for x in args.hidden.split(","))
-        cfg = Config(epochs=cfg.epochs, lr=cfg.lr, hidden_dims=hidden)
+        cfg = Config(model_type=cfg.model_type, epochs=cfg.epochs, lr=cfg.lr, hidden_dims=hidden)
 
     # device
     device = torch.device("cuda" if (cfg.use_cuda_if_available and torch.cuda.is_available()) else "cpu")
@@ -80,66 +83,109 @@ def main():
     X_train, X_val, X_test, y_train, y_val, y_test, scaler = utils.split_and_scale(df, cfg)
     in_features = X_train.shape[1]
 
-    # DataLoader
-    train_loader, val_loader, test_loader = utils.make_loaders(
-        X_train, y_train, X_val, y_val, X_test, y_test, cfg, device
-    )
+    if cfg.model_type == "mlp":
+        # DataLoader (MLPのみ)
+        train_loader, val_loader, test_loader = utils.make_loaders(
+            X_train, y_train, X_val, y_val, X_test, y_test, cfg, device
+        )
 
     # モデル
-    model = MLPRegressor(in_features=in_features, hidden_dims=cfg.hidden_dims, dropout=cfg.dropout).to(device)
-    criterion = nn.MSELoss()
-    optimizer = Adam(model.parameters(), lr=cfg.lr, weight_decay=cfg.weight_decay)
+    if cfg.model_type == "mlp":
+        model = MLPRegressor(in_features=in_features, hidden_dims=cfg.hidden_dims, dropout=cfg.dropout).to(device)
+        criterion = nn.MSELoss()
+        optimizer = Adam(model.parameters(), lr=cfg.lr, weight_decay=cfg.weight_decay)
+        print(f"[INFO] device={device}, params={model.n_params:,}")
+        print(f"[INFO] train={len(train_loader.dataset)}, val={len(val_loader.dataset)}, test={len(test_loader.dataset)}")
+    else:  # SVR
+        model = SVRRegressor(
+            kernel=cfg.svr_kernel,
+            C=cfg.svr_C,
+            epsilon=cfg.svr_epsilon,
+            gamma=cfg.svr_gamma,
+            grid_search=cfg.svr_grid_search,
+            cv=cfg.svr_cv,
+            random_state=cfg.random_state
+        )
+        print(f"[INFO] SVR model created")
+        print(f"[INFO] train={len(X_train)}, val={len(X_val)}, test={len(X_test)}")
 
-    print(f"[INFO] device={device}, params={model.n_params:,}")
-    print(f"[INFO] train={len(train_loader.dataset)}, val={len(val_loader.dataset)}, test={len(test_loader.dataset)}")
+    # 学習
+    if cfg.model_type == "mlp":
+        # MLPの学習ループ（早期終了: val RMSE）
+        best_val_rmse = float("inf")
+        patience = 0
+        history_rows = []
 
-    # 学習ループ（早期終了: val RMSE）
-    best_val_rmse = float("inf")
-    patience = 0
-    history_rows = []
+        for epoch in range(1, cfg.epochs + 1):
+            train_rmse = train_one_epoch(model, train_loader, criterion, optimizer, device)
+            yv, pv = evaluate(model, val_loader, device)  # y_true, y_pred
+            val_metrics = utils.compute_regression_metrics(yv, pv)
+            val_rmse = val_metrics["RMSE"]
 
-    for epoch in range(1, cfg.epochs + 1):
-        train_rmse = train_one_epoch(model, train_loader, criterion, optimizer, device)
-        yv, pv = evaluate(model, val_loader, device)  # y_true, y_pred
-        val_metrics = utils.compute_regression_metrics(yv, pv)
-        val_rmse = val_metrics["RMSE"]
+            history_rows.append({"epoch": epoch, "train_rmse": train_rmse, "val_rmse": val_rmse})
 
-        history_rows.append({"epoch": epoch, "train_rmse": train_rmse, "val_rmse": val_rmse})
+            improved = val_rmse < best_val_rmse - 1e-6
+            if improved:
+                best_val_rmse = val_rmse
+                patience = 0
+                torch.save(model.state_dict(), run_dir / "best_model.pt")
+            else:
+                patience += 1
 
-        improved = val_rmse < best_val_rmse - 1e-6
-        if improved:
-            best_val_rmse = val_rmse
-            patience = 0
-            torch.save(model.state_dict(), run_dir / "best_model.pt")
-        else:
-            patience += 1
+            if epoch % 10 == 0 or improved:
+                print(f"Epoch {epoch:03d} | train RMSE={train_rmse:.4f} | val RMSE={val_rmse:.4f} | best={best_val_rmse:.4f}")
 
-        if epoch % 10 == 0 or improved:
-            print(f"Epoch {epoch:03d} | train RMSE={train_rmse:.4f} | val RMSE={val_rmse:.4f} | best={best_val_rmse:.4f}")
+            if patience >= cfg.early_stopping_patience:
+                print(f"[INFO] Early stopping at epoch {epoch} (best val RMSE={best_val_rmse:.4f})")
+                break
 
-        if patience >= cfg.early_stopping_patience:
-            print(f"[INFO] Early stopping at epoch {epoch} (best val RMSE={best_val_rmse:.4f})")
-            break
+        # 学習履歴保存 & 図
+        hist_df = pd.DataFrame(history_rows)
+        hist_df.to_csv(run_dir / "history.csv", index=False)
+        utils.plot_learning_curve(hist_df, figs_dir / "learning_curve.png")
 
-    # 学習履歴保存 & 図
-    hist_df = pd.DataFrame(history_rows)
-    hist_df.to_csv(run_dir / "history.csv", index=False)
-    utils.plot_learning_curve(hist_df, figs_dir / "learning_curve.png")
-
-    # ベストモデルで再評価
-    model.load_state_dict(torch.load(run_dir / "best_model.pt", map_location=device, weights_only=True))
+        # ベストモデルで再評価
+        model.load_state_dict(torch.load(run_dir / "best_model.pt", map_location=device, weights_only=True))
+        
+    else:  # SVR
+        # SVRの学習（グリッドサーチ含む）
+        print("[INFO] Training SVR model...")
+        model.fit(X_train, y_train, X_val, y_val)
+        
+        # SVRモデル保存
+        model.save(run_dir / "best_model.pkl")
+        print(f"[INFO] SVR training completed. Support vectors: {model.n_params}")
+        
+        # SVRには学習履歴がないので空のCSVを作成
+        hist_df = pd.DataFrame({"epoch": [], "train_rmse": [], "val_rmse": []})
+        hist_df.to_csv(run_dir / "history.csv", index=False)
 
     # train/val/test の指標と予測ファイル
     metrics_all = {}
-    for split_name, loader in [("train", train_loader), ("val", val_loader), ("test", test_loader)]:
-        y_true, y_pred = evaluate(model, loader, device)
-        metrics = utils.compute_regression_metrics(y_true, y_pred)
-        metrics_all[split_name] = metrics
-        utils.save_predictions(y_true, y_pred, run_dir, split_name)
-        utils.plot_pred_scatter(y_true, y_pred, figs_dir / f"scatter_{split_name}.png",
-                                title=f"Pred vs True ({split_name})")
-        utils.plot_residual_hist(y_true - y_pred, figs_dir / f"residual_{split_name}.png",
-                                 title=f"Residuals ({split_name})")
+    
+    if cfg.model_type == "mlp":
+        # MLPの評価
+        for split_name, loader in [("train", train_loader), ("val", val_loader), ("test", test_loader)]:
+            y_true, y_pred = evaluate(model, loader, device)
+            metrics = utils.compute_regression_metrics(y_true, y_pred)
+            metrics_all[split_name] = metrics
+            utils.save_predictions(y_true, y_pred, run_dir, split_name)
+            utils.plot_pred_scatter(y_true, y_pred, figs_dir / f"scatter_{split_name}.png",
+                                    title=f"Pred vs True ({split_name})")
+            utils.plot_residual_hist(y_true - y_pred, figs_dir / f"residual_{split_name}.png",
+                                     title=f"Residuals ({split_name})")
+    else:  # SVR
+        # SVRの評価
+        for split_name, (X, y) in [("train", (X_train, y_train)), ("val", (X_val, y_val)), ("test", (X_test, y_test))]:
+            y_true = y
+            y_pred = model.predict(X)
+            metrics = utils.compute_regression_metrics(y_true, y_pred)
+            metrics_all[split_name] = metrics
+            utils.save_predictions(y_true, y_pred, run_dir, split_name)
+            utils.plot_pred_scatter(y_true, y_pred, figs_dir / f"scatter_{split_name}.png",
+                                    title=f"Pred vs True ({split_name})")
+            utils.plot_residual_hist(y_true - y_pred, figs_dir / f"residual_{split_name}.png",
+                                     title=f"Residuals ({split_name})")
 
     utils.save_metrics_table(metrics_all, run_dir)
 

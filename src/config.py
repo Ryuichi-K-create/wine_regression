@@ -24,8 +24,17 @@ class Config:
     num_workers: int = 0
 
     # model
-    hidden_dims: List[int] = (128, 64)  # ReLU+Dropout
-    dropout: float = 0.10
+    model_type: str = "mlp"  # "mlp" or "svr"
+    hidden_dims: List[int] = (128, 64)  # ReLU+Dropout (MLPのみ)
+    dropout: float = 0.10  # MLPのみ
+
+    # SVR params
+    svr_kernel: str = "rbf"  # "rbf", "linear", "poly", "sigmoid"
+    svr_C: float = 1.0
+    svr_epsilon: float = 0.1
+    svr_gamma: str = "scale"
+    svr_grid_search: bool = True
+    svr_cv: int = 5
 
     # device
     use_cuda_if_available: bool = True
