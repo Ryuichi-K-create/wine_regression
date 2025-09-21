@@ -9,6 +9,7 @@
 \usepackage{fancyhdr}
 \usepackage{caption}
 \usepackage{subcaption}
+\usepackage{float}
 \usepackage{url}
 \usepackage{hyperref}
 
@@ -25,7 +26,8 @@
 \captionsetup{font=small,labelfont=bf}
 
 \title{ワイン品質予測における機械学習手法の比較研究}
-\author{学籍番号・氏名}
+\author{学籍番号:2515111031
+氏名:小西隆一}
 \date{2025年9月21日}
 
 \begin{document}
@@ -44,7 +46,7 @@
 
 本研究では、UCI Machine Learning Repositoryで公開されているPortuguese "Vinho Verde" wine datasetの赤ワインデータを使用した。このデータセットは、ポルトガルの「ヴィーニョ・ヴェルデ」地域で生産された赤ワイン1,599本について、理化学的特性と品質評価を記録したものである。
 
-データセットには以下の特徴量が含まれている：
+データセットには以下の11個の特徴量が含まれている：
 
 \begin{itemize}
     \item \textbf{固定酸度（fixed acidity）}: 主にタルタル酸などの不揮発性酸の濃度（g/dm³）
@@ -71,8 +73,6 @@
 \textbf{学習・検証・テストデータの役割}: 学習データはモデルのパラメータを最適化するために使用し、検証データは学習中の早期終了判定とハイパーパラメータ調整に使用した。テストデータは最終的なモデル性能評価にのみ使用し、学習過程では一切使用しないことで、未知データに対する汎化性能を客観的に評価した。
 
 \textbf{標準化処理}: 各特徴量は平均0、標準偏差1になるよう標準化を実施した。これは、特徴量間でスケールが大きく異なるため（例：pHは3-4の範囲、総亜硫酸は6-289の範囲）、学習の収束性を向上させ、各特徴量の寄与を公平に評価するために必要である。標準化は学習データの統計量を用いて実施し、検証・テストデータには同じ変換を適用した。
-
-\textbf{乱数シード固定}: 実験の再現性を確保するため、データ分割および各モデルの重み初期化において乱数シードを42に固定した。
 
 \section{手法}
 
@@ -189,63 +189,71 @@ MLPが最も優秀な性能を示し、Test RMSEで0.623、$R^2$で0.416を記�
 
 \subsection{学習過程の分析}
 
-\textbf{図1: MLP学習曲線}
-\begin{itemize}
-    \item ファイル名: \texttt{results/mlp/20250921\_200150/figs/learning\_curve.png}
-    \item 説明: 訓練用RMSEと検証用RMSEの推移を示す。early stoppingにより適切な時点で学習が停止されている様子が確認できる。
-\end{itemize}
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.7\textwidth]{../results/mlp/20250921_200150/figs/learning_curve.png}
+\caption{MLP学習曲線: 訓練用RMSEと検証用RMSEの推移を示す。early stoppingにより適切な時点で学習が停止されている様子が確認できる。}
+\label{fig:mlp_learning}
+\end{figure}
 
-\textbf{図2: 線形回帰学習曲線}
-\begin{itemize}
-    \item ファイル名: \texttt{results/linear/20250921\_213321/figs/learning\_curve.png}
-    \item 説明: 線形回帰の学習曲線。MLPと比較して早期に収束している様子が観察される。
-\end{itemize}
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.7\textwidth]{../results/linear/20250921_213321/figs/learning_curve.png}
+\caption{線形回帰学習曲線: MLPと比較して早期に収束している様子が観察される。}
+\label{fig:linear_learning}
+\end{figure}
 
-各モデルの学習過程を分析すると、MLPは約100-150エポックで最適な性能に達し、早期終了により過学習を適切に回避できた。線形回帰は約80-100エポックでの収束を示し、より短時間での学習が可能であった。SVRは非反復的なアルゴリズムのため、グリッドサーチによる最適化のみを実施した。
+図\ref{fig:mlp_learning}と図\ref{fig:linear_learning}に示すように、各モデルの学習過程を分析すると、MLPは約100-150エポックで最適な性能に達し、早期終了により過学習を適切に回避できた。線形回帰は約80-100エポックでの収束を示し、より短時間での学習が可能であった。SVRは非反復的なアルゴリズムのため、グリッドサーチによる最適化のみを実施した。
 
 \subsection{予測精度の詳細分析}
 
-\textbf{図3: 予測値 vs 実測値散布図（MLP）}
-\begin{itemize}
-    \item ファイル名: \texttt{results/mlp/20250921\_200150/figs/scatter\_test.png}
-    \item 説明: MLPの予測値と実測値の関係を示す散布図。理想的な $y=x$ 線に近い分布を示している。
-\end{itemize}
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.6\textwidth]{../results/mlp/20250921_200150/figs/scatter_test.png}
+\caption{予測値 vs 実測値散布図（MLP）: MLPの予測値と実測値の関係を示す散布図。理想的な $y=x$ 線に近い分布を示している。}
+\label{fig:mlp_scatter}
+\end{figure}
 
-\textbf{図4: 予測値 vs 実測値散布図（線形回帰）}
-\begin{itemize}
-    \item ファイル名: \texttt{results/linear/20250921\_213321/figs/scatter\_test.png}
-    \item 説明: 線形回帰の予測値と実測値の関係。MLPとほぼ同様の分布パターンを示している。
-\end{itemize}
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.6\textwidth]{../results/linear/20250921_213321/figs/scatter_test.png}
+\caption{予測値 vs 実測値散布図（線形回帰）: 線形回帰の予測値と実測値の関係。MLPとほぼ同様の分布パターンを示している。}
+\label{fig:linear_scatter}
+\end{figure}
 
-\textbf{図5: 予測値 vs 実測値散布図（SVR）}
-\begin{itemize}
-    \item ファイル名: \texttt{results/svr/20250921\_203231/figs/scatter\_test.png}
-    \item 説明: SVRの予測値と実測値の関係。他の2手法と比較してややばらつきが大きい。
-\end{itemize}
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.6\textwidth]{../results/svr/20250921_203231/figs/scatter_test.png}
+\caption{予測値 vs 実測値散布図（SVR）: SVRの予測値と実測値の関係。他の2手法と比較してややばらつきが大きい。}
+\label{fig:svr_scatter}
+\end{figure}
 
-散布図の分析により、全モデルが品質の中央値付近（5-6）での予測精度は高いが、極端な品質値（3-4、7-8）では予測精度が低下する傾向が確認された。これは訓練データにおける品質分布の偏りが影響していると考えられる。
+図\ref{fig:mlp_scatter}、図\ref{fig:linear_scatter}、図\ref{fig:svr_scatter}の散布図分析により、全モデルが品質の中央値付近（5-6）での予測精度は高いが、極端な品質値（3-4、7-8）では予測精度が低下する傾向が確認された。これは訓練データにおける品質分布の偏りが影響していると考えられる。
 
 \subsection{残差分析}
 
-\textbf{図6: 残差分布ヒストグラム（MLP）}
-\begin{itemize}
-    \item ファイル名: \texttt{results/mlp/20250921\_200150/figs/residual\_test.png}
-    \item 説明: MLPの残差分布。概ね正規分布に近い形状を示している。
-\end{itemize}
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.6\textwidth]{../results/mlp/20250921_200150/figs/residual_test.png}
+\caption{残差分布ヒストグラム（MLP）: MLPの残差分布。概ね正規分布に近い形状を示している。}
+\label{fig:mlp_residual}
+\end{figure}
 
-\textbf{図7: 残差分布ヒストグラム（線形回帰）}
-\begin{itemize}
-    \item ファイル名: \texttt{results/linear/20250921\_213321/figs/residual\_test.png}
-    \item 説明: 線形回帰の残差分布。MLPと似た分布パターンを示している。
-\end{itemize}
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.6\textwidth]{../results/linear/20250921_213321/figs/residual_test.png}
+\caption{残差分布ヒストグラム（線形回帰）: 線形回帰の残差分布。MLPと似た分布パターンを示している。}
+\label{fig:linear_residual}
+\end{figure}
 
-\textbf{図8: 残差分布ヒストグラム（SVR）}
-\begin{itemize}
-    \item ファイル名: \texttt{results/svr/20250921\_203231/figs/residual\_test.png}
-    \item 説明: SVRの残差分布。他のモデルと比較して分布の尾が長い傾向がある。
-\end{itemize}
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.6\textwidth]{../results/svr/20250921_203231/figs/residual_test.png}
+\caption{残差分布ヒストグラム（SVR）: SVRの残差分布。他のモデルと比較して分布の尾が長い傾向がある。}
+\label{fig:svr_residual}
+\end{figure}
 
-残差分析の結果、MLPと線形回帰の残差は概ね正規分布に従い、系統的なバイアスは確認されなかった。SVRの残差はやや重い尾を持つ分布を示し、外れ値に対する特性の違いが表れている。
+図\ref{fig:mlp_residual}、図\ref{fig:linear_residual}、図\ref{fig:svr_residual}の残差分析の結果、MLPと線形回帰の残差は概ね正規分布に従い、系統的なバイアスは確認されなかった。SVRの残差はやや重い尾を持つ分布を示し、外れ値に対する特性の違いが表れている。
 
 \subsection{ハイパーパラメータ感度分析}
 

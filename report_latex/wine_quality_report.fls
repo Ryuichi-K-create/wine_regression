@@ -66,6 +66,8 @@ INPUT c:/Users/Scent/texlive/2025/texmf-dist/tex/latex/caption/ltcaption.sty
 INPUT c:/Users/Scent/texlive/2025/texmf-dist/tex/latex/caption/ltcaption.sty
 INPUT c:/Users/Scent/texlive/2025/texmf-dist/tex/latex/caption/subcaption.sty
 INPUT c:/Users/Scent/texlive/2025/texmf-dist/tex/latex/caption/subcaption.sty
+INPUT c:/Users/Scent/texlive/2025/texmf-dist/tex/latex/float/float.sty
+INPUT c:/Users/Scent/texlive/2025/texmf-dist/tex/latex/float/float.sty
 INPUT c:/Users/Scent/texlive/2025/texmf-dist/tex/latex/url/url.sty
 INPUT c:/Users/Scent/texlive/2025/texmf-dist/tex/latex/url/url.sty
 INPUT c:/Users/Scent/texlive/2025/texmf-dist/tex/latex/hyperref/hyperref.sty
@@ -194,7 +196,43 @@ INPUT c:/Users/Scent/texlive/2025/texmf-dist/fonts/tfm/public/cm/cmr9.tfm
 INPUT c:/Users/Scent/texlive/2025/texmf-dist/fonts/tfm/uptex-fonts/jis/upjisg-v.tfm
 INPUT c:/Users/Scent/texlive/2025/texmf-dist/fonts/tfm/uptex-fonts/jis/upjisg-h.tfm
 INPUT c:/Users/Scent/texlive/2025/texmf-dist/fonts/tfm/public/cm/cmbx9.tfm
-INPUT c:/Users/Scent/texlive/2025/texmf-dist/fonts/tfm/public/cm/cmtt10.tfm
+INPUT ../results/mlp/20250921_200150/figs/learning_curve.png
+INPUT ../results/mlp/20250921_200150/figs/learning_curve.png
+INPUT ../results/mlp/20250921_200150/figs/learning_curve.png
+INPUT extractbb -B cropbox -O ../results/mlp/20250921_200150/figs/learning_curve.png
+INPUT ../results/linear/20250921_213321/figs/learning_curve.png
+INPUT ../results/linear/20250921_213321/figs/learning_curve.png
+INPUT ../results/linear/20250921_213321/figs/learning_curve.png
+INPUT extractbb -B cropbox -O ../results/linear/20250921_213321/figs/learning_curve.png
+INPUT ../results/mlp/20250921_200150/figs/scatter_test.png
+INPUT ../results/mlp/20250921_200150/figs/scatter_test.png
+INPUT ../results/mlp/20250921_200150/figs/scatter_test.png
+INPUT extractbb -B cropbox -O ../results/mlp/20250921_200150/figs/scatter_test.png
+INPUT c:/Users/Scent/texlive/2025/texmf-dist/fonts/tfm/public/cm/cmmi9.tfm
+INPUT c:/Users/Scent/texlive/2025/texmf-dist/fonts/tfm/public/cm/cmsy9.tfm
+INPUT c:/Users/Scent/texlive/2025/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex9.tfm
+INPUT c:/Users/Scent/texlive/2025/texmf-dist/fonts/tfm/public/amsfonts/symbols/msam10.tfm
+INPUT c:/Users/Scent/texlive/2025/texmf-dist/fonts/tfm/public/amsfonts/symbols/msbm10.tfm
+INPUT ../results/linear/20250921_213321/figs/scatter_test.png
+INPUT ../results/linear/20250921_213321/figs/scatter_test.png
+INPUT ../results/linear/20250921_213321/figs/scatter_test.png
+INPUT extractbb -B cropbox -O ../results/linear/20250921_213321/figs/scatter_test.png
+INPUT ../results/svr/20250921_203231/figs/scatter_test.png
+INPUT ../results/svr/20250921_203231/figs/scatter_test.png
+INPUT ../results/svr/20250921_203231/figs/scatter_test.png
+INPUT extractbb -B cropbox -O ../results/svr/20250921_203231/figs/scatter_test.png
+INPUT ../results/mlp/20250921_200150/figs/residual_test.png
+INPUT ../results/mlp/20250921_200150/figs/residual_test.png
+INPUT ../results/mlp/20250921_200150/figs/residual_test.png
+INPUT extractbb -B cropbox -O ../results/mlp/20250921_200150/figs/residual_test.png
+INPUT ../results/linear/20250921_213321/figs/residual_test.png
+INPUT ../results/linear/20250921_213321/figs/residual_test.png
+INPUT ../results/linear/20250921_213321/figs/residual_test.png
+INPUT extractbb -B cropbox -O ../results/linear/20250921_213321/figs/residual_test.png
+INPUT ../results/svr/20250921_203231/figs/residual_test.png
+INPUT ../results/svr/20250921_203231/figs/residual_test.png
+INPUT ../results/svr/20250921_203231/figs/residual_test.png
+INPUT extractbb -B cropbox -O ../results/svr/20250921_203231/figs/residual_test.png
 INPUT wine_quality_report.aux
 INPUT ./wine_quality_report.out
 INPUT ./wine_quality_report.out
