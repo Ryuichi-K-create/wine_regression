@@ -56,15 +56,32 @@ def main():
     parser.add_argument("--epochs", type=int, default=None)
     parser.add_argument("--lr", type=float, default=None)
     parser.add_argument("--hidden", type=str, default=None, help="例: 128,64")
+    parser.add_argument("--dropout", type=float, default=None, help="ドロップアウト率")
+    parser.add_argument("--weight_decay", type=float, default=None, help="重み減衰")
     args = parser.parse_args()
 
     cfg = Config()
-    if args.model is not None: cfg = Config(model_type=args.model)
-    if args.epochs is not None: cfg = Config(model_type=cfg.model_type, epochs=args.epochs)
-    if args.lr is not None:     cfg = Config(model_type=cfg.model_type, epochs=cfg.epochs, lr=args.lr)
+    # パラメータの段階的更新
+    params = {}
+    if args.model is not None: params['model_type'] = args.model
+    if args.epochs is not None: params['epochs'] = args.epochs
+    if args.lr is not None: params['lr'] = args.lr
+    if args.dropout is not None: params['dropout'] = args.dropout
+    if args.weight_decay is not None: params['weight_decay'] = args.weight_decay
     if args.hidden:
-        hidden = tuple(int(x.strip()) for x in args.hidden.split(","))
-        cfg = Config(model_type=cfg.model_type, epochs=cfg.epochs, lr=cfg.lr, hidden_dims=hidden)
+        params['hidden_dims'] = tuple(int(x.strip()) for x in args.hidden.split(","))
+    
+    # 既存の設定を保持しながら新しい設定でConfig作成
+    if params:
+        current_params = {
+            'model_type': params.get('model_type', cfg.model_type),
+            'epochs': params.get('epochs', cfg.epochs),
+            'lr': params.get('lr', cfg.lr),
+            'dropout': params.get('dropout', cfg.dropout),
+            'weight_decay': params.get('weight_decay', cfg.weight_decay),
+            'hidden_dims': params.get('hidden_dims', cfg.hidden_dims)
+        }
+        cfg = Config(**current_params)
 
     # device
     device = torch.device("cuda" if (cfg.use_cuda_if_available and torch.cuda.is_available()) else "cpu")
