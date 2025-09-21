@@ -72,7 +72,7 @@ def main():
     utils.set_seed(cfg.random_state)
 
     # 出力ディレクトリ
-    run_dir = utils.make_run_dir(cfg.results_dir)
+    run_dir = utils.make_run_dir(cfg.results_dir,cfg.model_type)
     figs_dir = run_dir / "figs"
 
     # 設定保存

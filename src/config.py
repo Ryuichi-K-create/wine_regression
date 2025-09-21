@@ -24,7 +24,7 @@ class Config:
     num_workers: int = 0
 
     # model
-    model_type: str = "mlp"  # "mlp" or "svr"
+    model_type: str = "svr"  # "mlp" or "svr"
     hidden_dims: List[int] = (128, 64)  # ReLU+Dropout (MLPのみ)
     dropout: float = 0.10  # MLPのみ
 

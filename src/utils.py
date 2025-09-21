@@ -27,9 +27,9 @@ def set_seed(seed: int) -> None:
     torch.cuda.manual_seed_all(seed)
     os.environ["PYTHONHASHSEED"] = str(seed)
 
-def make_run_dir(results_dir: str) -> Path:
+def make_run_dir(results_dir: str, model_type: str) -> Path:
     ts = datetime.now().strftime("%Y%m%d_%H%M%S")
-    run_dir = Path(results_dir) / ts
+    run_dir = Path(results_dir) / model_type / ts
     run_dir.mkdir(parents=True, exist_ok=True)
     (run_dir / "figs").mkdir(parents=True, exist_ok=True)
     return run_dir
