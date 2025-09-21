@@ -13,6 +13,7 @@ import pandas as pd
 
 from src.config import Config
 from src.models.mlp import MLPRegressor
+from src.models.linear import LinearRegressor
 from src.models.svr import SVRRegressor
 from src import utils
 
@@ -51,7 +52,7 @@ def evaluate(model, loader, device):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--model", type=str, default=None, choices=["mlp", "svr"], help="モデルタイプ")
+    parser.add_argument("--model", type=str, default=None, choices=["mlp", "linear", "svr"], help="モデルタイプ")
     parser.add_argument("--epochs", type=int, default=None)
     parser.add_argument("--lr", type=float, default=None)
     parser.add_argument("--hidden", type=str, default=None, help="例: 128,64")
@@ -83,19 +84,24 @@ def main():
     X_train, X_val, X_test, y_train, y_val, y_test, scaler = utils.split_and_scale(df, cfg)
     in_features = X_train.shape[1]
 
-    if cfg.model_type == "mlp":
-        # DataLoader (MLPのみ)
+    # PyTorchベースのモデル（MLPとLinear）
+    if cfg.model_type in ["mlp", "linear"]:
+        # DataLoader
         train_loader, val_loader, test_loader = utils.make_loaders(
             X_train, y_train, X_val, y_val, X_test, y_test, cfg, device
         )
-
-    # モデル
-    if cfg.model_type == "mlp":
-        model = MLPRegressor(in_features=in_features, hidden_dims=cfg.hidden_dims, dropout=cfg.dropout).to(device)
+        
+        # モデル作成
+        if cfg.model_type == "mlp":
+            model = MLPRegressor(in_features=in_features, hidden_dims=cfg.hidden_dims, dropout=cfg.dropout).to(device)
+        elif cfg.model_type == "linear":
+            model = LinearRegressor(in_features=in_features, dropout=cfg.dropout).to(device)
+            
         criterion = nn.MSELoss()
         optimizer = Adam(model.parameters(), lr=cfg.lr, weight_decay=cfg.weight_decay)
-        print(f"[INFO] device={device}, params={model.n_params:,}")
+        print(f"[INFO] device={device}, model={cfg.model_type}, params={model.n_params:,}")
         print(f"[INFO] train={len(train_loader.dataset)}, val={len(val_loader.dataset)}, test={len(test_loader.dataset)}")
+    
     else:  # SVR
         model = SVRRegressor(
             kernel=cfg.svr_kernel,
@@ -110,7 +116,7 @@ def main():
         print(f"[INFO] train={len(X_train)}, val={len(X_val)}, test={len(X_test)}")
 
     # 学習
-    if cfg.model_type == "mlp":
+    if cfg.model_type in ["mlp", "linear"]:
         # MLPの学習ループ（早期終了: val RMSE）
         best_val_rmse = float("inf")
         patience = 0
@@ -163,8 +169,8 @@ def main():
     # train/val/test の指標と予測ファイル
     metrics_all = {}
     
-    if cfg.model_type == "mlp":
-        # MLPの評価
+    if cfg.model_type in ["mlp", "linear"]:
+        # PyTorchモデルの評価
         for split_name, loader in [("train", train_loader), ("val", val_loader), ("test", test_loader)]:
             y_true, y_pred = evaluate(model, loader, device)
             metrics = utils.compute_regression_metrics(y_true, y_pred)

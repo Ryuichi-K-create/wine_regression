@@ -14,7 +14,7 @@ from .utils import (
     set_seed,
     make_run_dir
 )
-from .models import MLPRegressor
+from .models import MLPRegressor, LinearRegressor
 
 __all__ = [
     'Config',
@@ -22,5 +22,6 @@ __all__ = [
     'compute_regression_metrics',
     'set_seed',
     'make_run_dir',
-    'MLPRegressor'
+    'MLPRegressor',
+    'LinearRegressor'
 ]

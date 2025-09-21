@@ -24,9 +24,9 @@ class Config:
     num_workers: int = 0
 
     # model
-    model_type: str = "svr"  # "mlp" or "svr"
+    model_type: str = "linear"  # "mlp", "linear", or "svr"
     hidden_dims: List[int] = (128, 64)  # ReLU+Dropout (MLPのみ)
-    dropout: float = 0.10  # MLPのみ
+    dropout: float = 0.10  # MLP/Linearのみ
 
     # SVR params
     svr_kernel: str = "rbf"  # "rbf", "linear", "poly", "sigmoid"
