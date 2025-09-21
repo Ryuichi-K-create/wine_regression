@@ -1,6 +1,9 @@
 \relax 
 \providecommand\hyper@newdestlabel[2]{}
 \providecommand*\HyPL@Entry[1]{}
+\citation{Yang2025}
+\citation{Cortez2009}
+\citation{UCIWineQuality}
 \HyPL@Entry{0<</S/D>>}
 \@writefile{toc}{\contentsline {section}{\numberline {1}序論}{1}{section.1}\protected@file@percent }
 \@writefile{toc}{\contentsline {section}{\numberline {2}データと前処理}{1}{section.2}\protected@file@percent }
@@ -10,40 +13,41 @@
 \@writefile{toc}{\contentsline {subsection}{\numberline {3.1}評価対象モデル}{2}{subsection.3.1}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsubsection}{\numberline {3.1.1}線形回帰（Linear Regression）}{2}{subsubsection.3.1.1}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsubsection}{\numberline {3.1.2}多層パーセプトロン（MLP: Multi-Layer Perceptron）}{2}{subsubsection.3.1.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.1.3}サポートベクター回帰（SVR: Support Vector Regression）}{2}{subsubsection.3.1.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}ハイパーパラメータ調整}{2}{subsection.3.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.3}学習設定}{3}{subsection.3.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.4}評価手法}{3}{subsection.3.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.1.3}サポートベクター回帰（SVR: Support Vector Regression）}{3}{subsubsection.3.1.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}ハイパーパラメータ調整とモデル学習}{3}{subsection.3.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.3}学習設定}{4}{subsection.3.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.4}評価手法}{4}{subsection.3.4}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {3.5}実験手順}{4}{subsection.3.5}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {4}結果}{4}{section.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}最終性能比較}{4}{subsection.4.1}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces 各モデルの性能比較}}{4}{table.caption.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {4}結果}{5}{section.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}最終性能比較}{5}{subsection.4.1}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces 各モデルの性能比較}}{5}{table.caption.1}\protected@file@percent }
 \providecommand*\caption@xref[2]{\@setref\relax\@undefined{#1}}
-\newlabel{tab:performance}{{1}{4}{各モデルの性能比較}{table.caption.1}{}}
+\newlabel{tab:performance}{{1}{5}{各モデルの性能比較}{table.caption.1}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {4.2}学習過程の分析}{5}{subsection.4.2}\protected@file@percent }
 \@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces MLP学習曲線: 訓練用RMSEと検証用RMSEの推移を示す。early stoppingにより適切な時点で学習が停止されている様子が確認できる。}}{5}{figure.caption.2}\protected@file@percent }
 \newlabel{fig:mlp_learning}{{1}{5}{MLP学習曲線: 訓練用RMSEと検証用RMSEの推移を示す。early stoppingにより適切な時点で学習が停止されている様子が確認できる。}{figure.caption.2}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces 線形回帰学習曲線: MLPと比較して早期に収束している様子が観察される。}}{5}{figure.caption.3}\protected@file@percent }
-\newlabel{fig:linear_learning}{{2}{5}{線形回帰学習曲線: MLPと比較して早期に収束している様子が観察される。}{figure.caption.3}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces 線形回帰学習曲線: trainとvalが極めて近い精度で収束する様子が観察される。}}{6}{figure.caption.3}\protected@file@percent }
+\newlabel{fig:linear_learning}{{2}{6}{線形回帰学習曲線: trainとvalが極めて近い精度で収束する様子が観察される。}{figure.caption.3}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {4.3}予測精度の詳細分析}{6}{subsection.4.3}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces 予測値 vs 実測値散布図（MLP）: MLPの予測値と実測値の関係を示す散布図。理想的な $y=x$ 線に近い分布を示している。}}{6}{figure.caption.4}\protected@file@percent }
-\newlabel{fig:mlp_scatter}{{3}{6}{予測値 vs 実測値散布図（MLP）: MLPの予測値と実測値の関係を示す散布図。理想的な $y=x$ 線に近い分布を示している。}{figure.caption.4}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces 予測値 vs 実測値散布図（線形回帰）: 線形回帰の予測値と実測値の関係。MLPとほぼ同様の分布パターンを示している。}}{6}{figure.caption.5}\protected@file@percent }
-\newlabel{fig:linear_scatter}{{4}{6}{予測値 vs 実測値散布図（線形回帰）: 線形回帰の予測値と実測値の関係。MLPとほぼ同様の分布パターンを示している。}{figure.caption.5}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces 予測値 vs 実測値散布図（SVR）: SVRの予測値と実測値の関係。他の2手法と比較してややばらつきが大きい。}}{7}{figure.caption.6}\protected@file@percent }
-\newlabel{fig:svr_scatter}{{5}{7}{予測値 vs 実測値散布図（SVR）: SVRの予測値と実測値の関係。他の2手法と比較してややばらつきが大きい。}{figure.caption.6}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.4}残差分析}{7}{subsection.4.4}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces 残差分布ヒストグラム（MLP）: MLPの残差分布。概ね正規分布に近い形状を示している。}}{7}{figure.caption.7}\protected@file@percent }
-\newlabel{fig:mlp_residual}{{6}{7}{残差分布ヒストグラム（MLP）: MLPの残差分布。概ね正規分布に近い形状を示している。}{figure.caption.7}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces 残差分布ヒストグラム（線形回帰）: 線形回帰の残差分布。MLPと似た分布パターンを示している。}}{8}{figure.caption.8}\protected@file@percent }
-\newlabel{fig:linear_residual}{{7}{8}{残差分布ヒストグラム（線形回帰）: 線形回帰の残差分布。MLPと似た分布パターンを示している。}{figure.caption.8}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces 残差分布ヒストグラム（SVR）: SVRの残差分布。他のモデルと比較して分布の尾が長い傾向がある。}}{8}{figure.caption.9}\protected@file@percent }
-\newlabel{fig:svr_residual}{{8}{8}{残差分布ヒストグラム（SVR）: SVRの残差分布。他のモデルと比較して分布の尾が長い傾向がある。}{figure.caption.9}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.5}ハイパーパラメータ感度分析}{8}{subsection.4.5}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces 予測値 vs 実測値散布図（MLP）: MLPの予測値と実測値の関係を示す散布図。qualityが5~7の範囲で高い精度を示しているが、極端な品質値では予測誤差が大きくなる傾向が見られる。}}{6}{figure.caption.4}\protected@file@percent }
+\newlabel{fig:mlp_scatter}{{3}{6}{予測値 vs 実測値散布図（MLP）: MLPの予測値と実測値の関係を示す散布図。qualityが5~7の範囲で高い精度を示しているが、極端な品質値では予測誤差が大きくなる傾向が見られる。}{figure.caption.4}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces 予測値 vs 実測値散布図（線形回帰）: 線形回帰の予測値と実測値の関係。MLPとほぼ同様の分布パターンを示している。}}{7}{figure.caption.5}\protected@file@percent }
+\newlabel{fig:linear_scatter}{{4}{7}{予測値 vs 実測値散布図（線形回帰）: 線形回帰の予測値と実測値の関係。MLPとほぼ同様の分布パターンを示している。}{figure.caption.5}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces 予測値 vs 実測値散布図（SVR）: SVRの予測値と実測値の関係。他の2手法と比較して,実測値とのばらつきがやや大きい。}}{7}{figure.caption.6}\protected@file@percent }
+\newlabel{fig:svr_scatter}{{5}{7}{予測値 vs 実測値散布図（SVR）: SVRの予測値と実測値の関係。他の2手法と比較して,実測値とのばらつきがやや大きい。}{figure.caption.6}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.4}残差分析}{8}{subsection.4.4}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces 残差分布ヒストグラム（MLP）}}{8}{figure.caption.7}\protected@file@percent }
+\newlabel{fig:mlp_residual}{{6}{8}{残差分布ヒストグラム（MLP）}{figure.caption.7}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces 残差分布ヒストグラム（線形回帰）}}{8}{figure.caption.8}\protected@file@percent }
+\newlabel{fig:linear_residual}{{7}{8}{残差分布ヒストグラム（線形回帰）}{figure.caption.8}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces 残差分布ヒストグラム（SVR）}}{9}{figure.caption.9}\protected@file@percent }
+\newlabel{fig:svr_residual}{{8}{9}{残差分布ヒストグラム（SVR）}{figure.caption.9}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.5}ハイパーパラメータ感度分析}{9}{subsection.4.5}\protected@file@percent }
 \@writefile{toc}{\contentsline {section}{\numberline {5}考察}{9}{section.5}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {5.1}モデル間の比較と特徴}{9}{subsection.5.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}特徴量の寄与に関する考察}{9}{subsection.5.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.3}モデルの限界と課題}{9}{subsection.5.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.4}実用化に向けた課題}{10}{subsection.5.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}モデルの限界と課題}{10}{subsection.5.2}\protected@file@percent }
 \@writefile{toc}{\contentsline {section}{\numberline {6}結論}{10}{section.6}\protected@file@percent }
+\bibcite{Yang2025}{1}
+\bibcite{Cortez2009}{2}
+\bibcite{UCIWineQuality}{3}
 \gdef \@abspage@last{11}
